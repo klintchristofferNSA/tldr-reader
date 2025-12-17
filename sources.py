@@ -6,7 +6,7 @@ CATEGORIES = {
       "machine learning", "openai", "anthropic"
   ],
   "cybersecurity": [
-    "security",vulnerability", "cve", "exploit",
+    "security","vulnerability", "cve", "exploit",
     "malware", "ransomware", "breach", "attack"
   ],
   "Linux": [
