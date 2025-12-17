@@ -10,18 +10,23 @@ from summarizer import summarize_text
 
 
 def extract_article_text(url):
+    """
+    Fetch and extract main article text.
+    Tries newspaper3k first, then readability as fallback.
+    """
     try:
         article = Article(url)
         article.download()
         article.parse()
-        if len(article.text) > 500:
+        if article.text and len(article.text) > 500:
             return article.text
     except Exception:
         pass
 
     try:
-        html = requests.get(url, timeout=10).text
-        doc = Document(html)
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        doc = Document(response.text)
         return doc.summary(html_partial=True)
     except Exception:
         return ""
@@ -31,10 +36,12 @@ def classify_entries(entries):
     categorized = defaultdict(list)
 
     for entry in entries:
-        combined = f"{entry.title} {entry.summary}".lower()
+        title = getattr(entry, "title", "")
+        summary = getattr(entry, "summary", "")
+        combined = f"{title} {summary}".lower()
 
         for category, keywords in CATEGORIES.items():
-            if any(k in combined for k in keywords):
+            if any(keyword in combined for keyword in keywords):
                 categorized[category].append(entry)
 
     return categorized
@@ -57,23 +64,23 @@ def main():
 
         report.append(f"## {category}\n")
 
-        for entry in entries[:8]:
-            link = entry.link
-
-            if link in seen_links:
+        for entry in entries[:8]:  # cap per category (Phase 1)
+            link = getattr(entry, "link", None)
+            if not link or link in seen_links:
                 continue
+
             seen_links.add(link)
 
-            text = extract_article_text(link)
-            if not text or len(text) < 500:
+            article_text = extract_article_text(link)
+            if not article_text or len(article_text) < 500:
                 continue
 
-            summary = summarize_text(text)
+            summary = summarize_text(article_text)
 
             report.append(f"- **{entry.title}**")
             report.append(summary + "\n")
 
-    with open("weekly_report.txt", "w") as f:
+    with open("weekly_report.txt", "w", encoding="utf-8") as f:
         f.write("\n".join(report))
 
 
