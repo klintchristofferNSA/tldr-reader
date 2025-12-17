@@ -1,4 +1,4 @@
-TLDR_FEEDS = "https://tldr.tech/api/rss/tech"
+TLDR_FEED = "https://tldr.tech/api/rss/tech"
  
 CATEGORIES = {
   "AI": [
