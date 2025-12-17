@@ -77,21 +77,3 @@ def main():
 
 if __name__=="__main__":
     main()
-
-feed = feedparser.parse(TLDR_FEED)
-
-categorized = defaultdict(list)
-
-for entry 
-
-output = []
-output.append(f"TLDR Teck Summary - {date.today()}\n")
-
-for entry in feed.entries[:5]:
-  output.append(f"- {entry.title}")
-  output.append(f" {entry.summary}\n")
-
-summary_text = "\n".join(output)
-
-with open ("summary.txt", "w") as f:
-  f.write(summary_text)
