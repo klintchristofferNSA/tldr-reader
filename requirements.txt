@@ -1,0 +1,4 @@
+feedparser
+requests
+readability-lxml
+newspaper3k
